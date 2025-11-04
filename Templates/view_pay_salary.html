@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Admin | Allowances and Deductions | QuickPay {% endblock %}
+{% block content %}
+<h3>View Common Allowances and Taxes </h3>
+{% if cp %}
+<pre> Dearness Allowance: {{cp.da}}</pre>
+<pre> House Rent Allowance: {{cp.hra}} </pre>
+<pre> Provident Fund: {{cp.pf}}</pre>
+<pre> Employees' State Insurance: {{cp.esi}}</pre>
+<pre> Created on: {{cp.created_on}}</pre>
+<pre> Effective by: {{cp.effective_from}} </pre>
+<pre>Status: {{cp.status}}</pre>
+{% if cp.status == "Edit Requested" %}
+    <form method="get" action="{% url 'edit_common_pay' cp.id %}">
+        <button type="submit" class="btn btn-warning mt-3">Edit Common Pay</button>
+    </form>
+{% endif %}
+{% endif %}
+{% endblock %}

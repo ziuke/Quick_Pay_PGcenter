@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Feedback List</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Subject</th>
+                <th>Message</th>
+                <th>Date</th>
+                <th>Status</th>
+                {% if user.is_superuser %}
+                <th>Actions</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for feedback in feedbacks %}
+            <tr>
+                <td>{{ feedback.user.username }}</td>
+                <td>{{ feedback.subject }}</td>
+                <td>{{ feedback.message }}</td>
+                <td>{{ feedback.submitted_on }}</td>
+                <td>{{ feedback.status }}</td>
+                {% if user.is_superuser %}
+                <td>
+                    {% if feedback.status != 'Reviewed' %}
+                        <a href="{% url 'update_feedback_status' feedback.id %}" class="btn btn-sm btn-success">Mark as Reviewed</a>
+                    {% endif %}
+                </td>
+                {% endif %}
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">No feedback yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

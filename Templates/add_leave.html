@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Employee | Add Leave | QuickPay{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Apply for Leave</h2>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div class="mb-3">
+      <label class="form-label">Leave Type</label>
+      {{ form.type }}
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Start Date</label>
+        {{ form.start_date }}
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">End Date</label>
+        {{ form.end_date }}
+      </div>
+    </div>
+
+    <button type="submit" class="btn w-100 py-2 rounded-3 feature-card h3">Submit Leave</button>
+  </form>
+</div>
+{% endblock %}
+

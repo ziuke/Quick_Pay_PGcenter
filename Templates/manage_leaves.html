@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}HR Manager | Manage Leaves | QuickPay{% endblock %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 700px; display: block; text-align: left;">
+
+    <!-- Force heading centered on its own line -->
+    <h3 class="text-center d-block w-100 mb-4" style="text-align: center;">Manage Leaves</h3>
+
+    <!-- Force list to start below, left-aligned -->
+    <div style="text-align: left; display: block;">
+        {% if leaves %}
+            <ul class="list-unstyled">
+                {% for i in leaves %}
+                    <li class="mb-2">
+                        <a href="{% url 'view_leave' i.em.id %}" class="fw-semibold text-decoration-none">
+                            {{ i.em.user.get_full_name }}
+                        </a>
+                        <span class="ms-2 badge
+                            {% if i.status == 'approved' %} bg-success
+                            {% elif i.status == 'rejected' %} bg-danger
+                            {% else %} bg-warning text-dark {% endif %}">
+                            {{ i.status|capfirst }}
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted text-center">No leave requests available.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+
+
+
