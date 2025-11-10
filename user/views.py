@@ -318,3 +318,8 @@ def view_notifications(request):
     """Show only the notifications that belong to the logged-in user."""
     notifications = Notification.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'notifications.html', {'notifications': notifications})
+
+
+def faq(request):
+    return render(request, 'faq.html')
+

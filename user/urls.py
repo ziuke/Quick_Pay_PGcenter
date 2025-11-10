@@ -24,4 +24,5 @@ urlpatterns = [
     path('feedback_list', user.views.feedback_list, name='feedback_list'),
     path('update_feedback_status/<int:pk>/', user.views.update_feedback_status, name='update_feedback_status'),
     path('view_notifications', user.views.view_notifications, name='view_notifications'),
+    path('faq', user.views.faq, name='faq'),
 ]
