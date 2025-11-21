@@ -4,8 +4,9 @@ from decimal import Decimal
 from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.db.models import Sum
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
+from django.template.defaultfilters import floatformat
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
@@ -132,7 +133,7 @@ def run_payroll(request, employee_id):
     )
 
     if latest_review:
-        performance_bonus = (employee.salary * latest_review.increment_percentage) / 100
+        performance_bonus = latest_review.bonus_amount
     else:
         performance_bonus = Decimal(0.0)
 
@@ -141,7 +142,6 @@ def run_payroll(request, employee_id):
         if form.is_valid():
             basic_pay = employee.salary
             other_allowances = form.cleaned_data.get('other_allowances') or Decimal(0.0)
-            tax_type = form.cleaned_data.get('tax_type')
             tax_amt = form.cleaned_data.get('tax_amt') or Decimal(0.0)
 
             da_amount = basic_pay * Decimal(common_pay.da / 100)
@@ -165,7 +165,7 @@ def run_payroll(request, employee_id):
                 employee=employee,
                 pf=pf_amount,
                 esi=esi_amount,
-                income_tax=tax_amt if tax_type == 'income_tax' else Decimal(0.0),
+                income_tax=tax_amt or Decimal(0.0),
                 gross_salary_amount=gross_total
             )
 
@@ -173,7 +173,6 @@ def run_payroll(request, employee_id):
                 TaxDeduction.objects.create(
                     employee=employee,
                     deduction_summary=td,
-                    tax_type=tax_type,
                     tax_amt=tax_amt,
                     applicable_date=today
                 )
@@ -202,7 +201,7 @@ def run_payroll(request, employee_id):
             create_notification(
                 user=employee.user,
                 message=f"Your payslip for {today.strftime('%B %Y')} has been processed successfully. "
-                        f"Net Pay: ₹{net_salary}"
+                        f"Net Pay: ₹{net_salary:.2f}"
             )
             create_notification(
                 role='hr_manager',
@@ -213,7 +212,7 @@ def run_payroll(request, employee_id):
                 request,
                 f"Payroll generated for {employee.user.get_username()} | Unpaid leaves: {unpaid_days}"
             )
-            return redirect('view_payslips', employee_id=employee.id)
+            return redirect('views_payslips', employee_id=employee.id)
 
     else:
         form = PayrollManagerForm()
@@ -233,10 +232,29 @@ def run_payroll(request, employee_id):
 
 
 def view_payslips(request):
-    em = request.user
-    pay = Payslip.objects.filter(employee_id=em).order_by('-generated_date')
+    if not hasattr(request.user, 'employee_profile'):
+        messages.error(request, "You are not an employee. Cannot view payslips.")
+        return redirect('home')
+
+    employee = request.user.employee_profile
+
+    # Get the last 3 payslips
+    pay = Payslip.objects.filter(employee=employee).order_by('-generated_date')[:3]
+
     return render(request, 'view_payslips.html', {'pay': pay})
 
+
+"""def view_payslips(request):
+    # Check if the logged-in user is actually an employee
+    if not hasattr(request.user, 'employee_profile'):
+        messages.error(request, "You are not an employee. Cannot view payslips.")
+        return redirect('home')
+
+    employee = request.user.employee_profile
+    pay = Payslip.objects.filter(employee=employee).order_by('-generated_date')
+
+    return render(request, 'view_payslips.html', {'pay': pay})
+"""
 
 """def view_payroll_summary(request):
     payrolls = Payroll.objects.select_related('employee', 'gross', 'deductions').order_by('-payment_date')
@@ -250,8 +268,11 @@ def generate_payslip_pdf(request, payslip_id):
     employee = payslip.employee
     gross = payroll.gross
     deductions = payroll.deductions
-    if not (request.user.is_superuser or request.user == employee.user):
-        return HttpResponse("Unauthorized", status=403)
+    if not (
+            request.user == employee.user or
+            request.user.role in ['hr_manager', 'payroll_manager']
+    ):
+        return HttpResponseForbidden("Access denied")
     response = HttpResponse(content_type='application/pdf')
     response[
         'Content-Disposition'] = f'attachment; filename="Payslip_{employee.user.username}_{payslip.generated_date}.pdf"'
@@ -332,6 +353,5 @@ def payment_history(request):
 
 
 def views_payslips(request, employee_id):
-    pay = Payslip.objects.filter(employee_id=employee_id).order_by('-generated_date')
+    pay = Payslip.objects.filter(employee_id=employee_id).order_by('-generated_date').first()
     return render(request, 'views_payslips.html', {'pay': pay})
-

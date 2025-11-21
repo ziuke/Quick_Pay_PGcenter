@@ -47,6 +47,9 @@
                     Edit
                   </a>
                   <a href="{% url 'views_payslips' emp.id %}" class="btn btn-sm btn-outline-primary">View Payslip </a>
+                   <a href="{% url 'view_performance_review' emp.id %}" class="btn btn-sm btn-outline-success">
+        + Add Review
+    </a>
                 </td>
               </tr>
             {% endfor %}

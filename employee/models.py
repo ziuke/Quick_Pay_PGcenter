@@ -46,10 +46,9 @@ class Employee(models.Model):
 
 
 class LeaveRequest(models.Model):
-    LEAVE_CHOICES = [
+    LEAVE_TYPES = [
         ('sick', 'Sick'),
         ('vacation', 'Vacation'),
-        ('unpaid', 'Unpaid'),
     ]
     STATUS = [
         ('pending', 'Pending'),
@@ -57,11 +56,23 @@ class LeaveRequest(models.Model):
         ('rejected', 'Rejected'),
     ]
     em = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    type = models.CharField(max_length=15, choices=LEAVE_CHOICES, default='unpaid')
-    status = models.CharField(max_length=15, null=True, choices=STATUS, default='pending')
+    type = models.CharField(max_length=20, choices=LEAVE_TYPES)
+    status = models.CharField(max_length=20, choices=STATUS, default='pending')
     applied_on = models.DateTimeField(auto_now_add=True)
     start_date = models.DateField()
     end_date = models.DateField()
+    is_unpaid = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.em.user.username} | {self.type} | {self.status}"
+
+
+class LeaveLimit(models.Model):
+    sick_limit = models.IntegerField(default=12)
+    vacation_limit = models.IntegerField(default=12)
+
+    def __str__(self):
+        return "Global Leave Limits"
 
 
 class Attendance(models.Model):
@@ -71,8 +82,8 @@ class Attendance(models.Model):
         ('leave', 'Leave'),
     ]
 
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='attendances')
-    date = models.DateField(default=timezone.now)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    date = models.DateField()
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='present')
     leave = models.ForeignKey(LeaveRequest, null=True, blank=True, on_delete=models.SET_NULL)
 
@@ -82,6 +93,15 @@ class Attendance(models.Model):
 
     def __str__(self):
         return f"{self.employee.user.username} - {self.date} ({self.status})"
+
+
+BONUS_PERCENTAGE = {
+    1: 0,
+    2: 4,
+    3: 8,
+    4: 15,
+    5: 25,
+}
 
 
 class PerformanceReview(models.Model):
@@ -103,6 +123,7 @@ class PerformanceReview(models.Model):
     rating = models.PositiveSmallIntegerField(choices=RATING_CHOICES)
     comments = models.TextField(blank=True)
     increment_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
+    bonus_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     class Meta:
         db_table = "performance_reviews"
@@ -110,3 +131,11 @@ class PerformanceReview(models.Model):
 
     def __str__(self):
         return f"{self.employee.user.username} - {self.get_rating_display()} ({self.review_date})"
+
+    def save(self, *args, **kwargs):
+        # Auto calculate bonus
+        percent = BONUS_PERCENTAGE.get(self.rating, 0)
+        basic_salary = self.employee.salary
+
+        self.bonus_amount = (basic_salary * percent) / 100
+        super().save(*args, **kwargs)

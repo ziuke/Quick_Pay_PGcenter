@@ -3,52 +3,66 @@
 {% block title %} Payroll Manager | Payroll Generation | QuickPay {% endblock %}
 {% block content %}
 
-<h2>Generate Payroll for {{ employee.user.username }}</h2>
+<div class="container mt-4">
+    <h2 class="text-primary mb-4">Generate Payroll for <strong>{{ employee.user.username }}</strong></h2>
 
-<form method="POST" id="payroll-form">
-    {% csrf_token %}
+    <div class="row">
 
-    <div class="mb-3">
-        <label class="form-label">Basic Pay</label>
-        <input type="text" class="form-control" value="{{ employee.salary }}" readonly>
+        <!-- Left: Payroll Form -->
+        <div class="col-md-5">
+            <div class="card shadow-sm p-4">
+                <form method="POST" id="payroll-form">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Basic Pay</label>
+                        <input type="text" class="form-control" value="{{ employee.salary }}" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Performance Bonus</label>
+                        <input type="text" class="form-control" value="{{ performance_bonus }}" readonly>
+                        <small class="text-muted">Taken from latest performance review.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Other Allowances</label>
+                        {{ form.other_allowances }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tax Amount</label>
+                        {{ form.tax_amt }}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        Generate Payroll
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right: Preview -->
+        <div class="col-md-6 offset-md-1">
+            <div class="card shadow-sm p-4">
+                <h4 class="text-success mb-3">Live Payroll Preview</h4>
+
+                <table class="table table-bordered text-center">
+                    <tr><th>DA Amount</th><td id="da_amount">0.00</td></tr>
+                    <tr><th>HRA Amount</th><td id="hra_amount">0.00</td></tr>
+                    <tr><th>PF Amount</th><td id="pf_amount">0.00</td></tr>
+                    <tr><th>ESI Amount</th><td id="esi_amount">0.00</td></tr>
+                    <tr><th>Gross Total</th><td id="gross_total">0.00</td></tr>
+                    <tr><th>Unpaid Leaves</th><td>{{ summary.unpaid_days }}</td></tr>
+                    <tr class="table-success">
+                        <th>Net Salary</th><td id="net_salary">0.00</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
     </div>
-
-    <div class="mb-3">
-        <label class="form-label">Performance Bonus</label>
-        <input type="text" class="form-control" value="{{ performance_bonus }}" readonly>
-        <small class="text-muted">Bonus automatically added from latest HR performance review.</small>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Other Allowances</label>
-        {{ form.other_allowances }}
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Tax Type</label>
-        {{ form.tax_type }}
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Tax Amount</label>
-        {{ form.tax_amt }}
-    </div>
-
-    <button type="submit" class="btn btn-primary">Generate Payroll</button>
-</form>
-
-<hr>
-
-<h4>Live Payroll Preview</h4>
-<table class="table table-bordered w-50">
-    <tr><th>DA Amount</th><td id="da_amount">0.00</td></tr>
-    <tr><th>HRA Amount</th><td id="hra_amount">0.00</td></tr>
-    <tr><th>PF Amount</th><td id="pf_amount">0.00</td></tr>
-    <tr><th>ESI Amount</th><td id="esi_amount">0.00</td></tr>
-    <tr><th>Gross Total</th><td id="gross_total">0.00</td></tr>
-    <tr><th>Unpaid Leaves</th><td>{{ summary.unpaid_days }}</td></tr>
-    <tr><th>Net Salary</th><td id="net_salary">0.00</td></tr>
-</table>
+</div>
 
 {% endblock %}
 
@@ -75,11 +89,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function calculatePayroll() {
         const allowance = parseFloat(allowanceInput.value) || 0;
+
         const daAmount = basic * daPercent / 100;
         const hraAmount = basic * hraPercent / 100;
         const pfAmount = basic * pfPercent / 100;
         const grossTotal = basic + daAmount + hraAmount + allowance + bonus;
         const esiAmount = (grossTotal <= 21000) ? grossTotal * esiPercent / 100 : 0;
+
         const perDaySalary = basic / totalDays;
         const leaveDeduction = perDaySalary * unpaidDays;
         const netSalary = grossTotal - pfAmount - esiAmount - leaveDeduction;

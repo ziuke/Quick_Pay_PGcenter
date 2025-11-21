@@ -61,9 +61,9 @@
 
 
                                 {% elif request.user.role == "employee" %}
-                                    <li class="nav-item"><a class="nav-link" href="#">View Payslips</a></li>
+                                    <li class="nav-item"><a class="nav-link" href="{% url 'view_payslips' %}">View Payslips</a></li>
      <li class="nav-item"><a class="nav-link" href="{% url 'add_leave' %}">Apply for Leave</a></li>
-                                    <li class="nav-item"><a class="nav-link" href="#">Payment History</a></li>
+                                    <li class="nav-item"><a class="nav-link" href="{% url 'payment_history' %}">Payment History</a></li>
                                     <li class="nav-item"><a class="nav-link" href="{% url 'submit_feedback' %}">Send Feedback</a></li>
                                     <li class="nav-item"><a class="nav-link" href="{% url 'view_notifications' %}">Notifications</a></li>
                                     <li class="nav-item"><a class="nav-link" href="{% url 'edit_profile' %}">Profile</a></li>

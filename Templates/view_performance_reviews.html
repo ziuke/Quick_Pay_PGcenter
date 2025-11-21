@@ -3,8 +3,8 @@
 {% block content %}
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="text-success">Performance Reviews</h3>
-        <a href="{% url 'add_performance_review' %}" class="btn btn-primary">Add New Review</a>
+        <h3 class="text-success">Performance Reviews for {{ employee.user.first_name }} {{ employee.user.last_name }}</h3>
+        <a href="{% url 'add_performance_review' employee.id %}" class="btn btn-primary">Add New Review</a>
     </div>
 
     <table class="table table-striped">
@@ -12,8 +12,7 @@
             <tr>
                 <th>Employee</th>
                 <th>Rating</th>
-                <th>Bonus (Rs)</th>
-                <th>Increment (%)</th>
+                <th>Bonus (₹)</th>
                 <th>Comments</th>
                 <th>Reviewed By</th>
                 <th>Date</th>
@@ -25,15 +24,15 @@
                 <td>{{ review.employee.user.username }}</td>
                 <td>{{ review.get_rating_display }}</td>
                 <td>{{ review.bonus_amount }}</td>
-                <td>{{ review.increment_percentage }}</td>
                 <td>{{ review.comments }}</td>
                 <td>{{ review.reviewed_by }}</td>
                 <td>{{ review.review_date }}</td>
             </tr>
             {% empty %}
-            <tr><td colspan="7" class="text-center text-muted">No performance reviews found.</td></tr>
+            <tr><td colspan="6" class="text-center text-muted">No performance reviews found.</td></tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
 {% endblock %}
+

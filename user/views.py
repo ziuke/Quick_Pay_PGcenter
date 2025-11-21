@@ -170,6 +170,8 @@ def add_user(request):
             user.office_mail = f"{user.username}@{domain}"
 
             user.save()
+
+            # Send email
             send_mail(
                 subject="Welcome to QuickPay Payroll System",
                 message=(
@@ -188,6 +190,11 @@ def add_user(request):
 
             messages.success(request, "User added successfully and credentials emailed.")
             return redirect('admin_home')
+
+        else:
+            # ❌ Form Invalid → Show Toast Error
+            messages.error(request, "Please correct the errors in the form and try again.")
+
     else:
         form = AddUserForm()
 
@@ -246,6 +253,8 @@ def submit_feedback(request):
             feedback = form.save(commit=False)
             feedback.user = request.user
             feedback.save()
+
+            # Notifications
             create_notification(
                 roles=['admin', 'hr_manager'],
                 message=f"A feedback has been submitted by {request.user.username}."
@@ -254,15 +263,19 @@ def submit_feedback(request):
                 user=feedback.user,
                 message="Your feedback has been submitted successfully."
             )
-            return redirect('feedback_success')
+
+            # Show success message
+            messages.success(request, "Your feedback has been submitted successfully.")
+            return redirect('submit_feedback')  # redirect to the same form page
     else:
         form = FeedbackForm()
+
     return render(request, 'submit_feedback.html', {'form': form})
 
 
 def feedback_list(request):
     if request.user.is_superuser or request.user.groups.filter(name__in=['Admin', 'HR Manager']).exists():
-        feedbacks = Feedback.objects.all().order_by('-submitted_on')
+        feedbacks = Feedback.objects.all().order_by('-created_on')
     else:
         feedbacks = Feedback.objects.filter(user=request.user)
     return render(request, 'feedback_list.html', {'feedbacks': feedbacks})
@@ -322,4 +335,3 @@ def view_notifications(request):
 
 def faq(request):
     return render(request, 'faq.html')
-

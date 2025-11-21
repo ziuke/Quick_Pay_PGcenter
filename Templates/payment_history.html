@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Employee| Payment History | QuickPay{% endblock %}
+{% block title %}Employee | Payment History | QuickPay{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
@@ -18,7 +18,6 @@
             <th>Total Earnings (₹)</th>
             <th>Total Deductions (₹)</th>
             <th>Net Pay (₹)</th>
-            <th class="text-center">Download</th>
           </tr>
         </thead>
         <tbody>
@@ -30,11 +29,6 @@
             <td>{{ slip.total_earnings }}</td>
             <td>{{ slip.total_deductions }}</td>
             <td><strong>{{ slip.net_pay }}</strong></td>
-            <td class="text-center">
-              <a href="{% url 'generate_payslip_pdf' slip.id %}" class="btn btn-sm btn-outline-primary">
-                Download PDF
-              </a>
-            </td>
           </tr>
           {% endfor %}
         </tbody>
@@ -43,8 +37,9 @@
   </div>
   {% else %}
   <div class="text-center text-muted mt-4">
-    <p>No payslips found yet.</p>
+    <p>No payment history available yet.</p>
   </div>
   {% endif %}
 </div>
 {% endblock %}
+
