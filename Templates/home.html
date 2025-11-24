@@ -1,0 +1,36 @@
+
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+  <!-- Left Side -->
+  <div class="left-card">
+    <h1>Welcome to <span class="brand">Quickpay</span></h1>
+    <p class="intro">
+      A secure and efficient payroll management system designed to automate salaries,
+      handle compliance, and give employees easy access to their payroll information.
+    </p>
+    <p class="quote">"Smart. Reliable. Transparent."</p>
+  </div>
+
+  <!-- Right Side -->
+  <div class="right-grid">
+    <a href="{% url 'login' %}" class="feature-card">
+      <h3>Login</h3>
+      <p>Access your account securely</p>
+    </a>
+    <a href="{% url 'about_us' %}" class="feature-card">
+      <h3>About Us</h3>
+      <p>Learn more about Quickpay</p>
+    </a>
+    <a href="{% url 'contact_us' %}" class="feature-card">
+      <h3>Contact Us</h3>
+      <p>Reach us or book a demo</p>
+    </a>
+    <a href="{% url 'faq' %}" class="feature-card">
+      <h3>Frequently Asked Questions</h3>
+      <p>Find answers to common questions</p>
+    </a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Employee | Leaves Applied | QuickPay{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Leaves Applied</h2>
+
+  {% if leave %}
+    <div class="table-responsive">
+      <table class="table table-striped table-bordered align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>Applied On</th>
+            <th>Type</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for l in leave %}
+            <tr>
+              <td>{{ l.applied_on|date:"d M Y" }}</td>
+              <td>{{ l.type|capfirst }}</td>
+              <td>{{ l.start_date|date:"d M Y" }}</td>
+              <td>{{ l.end_date|date:"d M Y" }}</td>
+              <td>
+                {% if l.status == 'approved' %}
+                  <span class="badge bg-success">{{ l.status|capfirst }}</span>
+                {% elif l.status == 'rejected' %}
+                  <span class="badge bg-danger">{{ l.status|capfirst }}</span>
+                {% else %}
+                  <span class="badge bg-warning text-dark">{{ l.status|capfirst }}</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-info">
+      No leaves have been applied yet.
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

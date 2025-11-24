@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+    <h3 class="text-success mb-3">Add Performance Review for {{ employee.user.first_name }} {{ employee.user.last_name }}</h3>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Save Review</button>
+    </form>
+</div>
+{% endblock %}
+

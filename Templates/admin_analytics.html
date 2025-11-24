@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Admin Analytics | QuickPay{% endblock %}
+
+{% block content %}
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    .analytics-container {
+        max-width: 1100px;
+        margin: 40px auto;
+        background: #f9fafb;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    .stats-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-bottom: 30px;
+    }
+
+    .card {
+        flex: 1 1 30%;
+        background: #fff;
+        padding: 20px;
+        text-align: center;
+        border-radius: 12px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background: #1b4332;
+        color: white;
+    }
+
+    .summary {
+        margin-top: 20px;
+        padding: 20px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+</style>
+
+<div class="analytics-container">
+
+    <h2 class="text-center fw-bold mb-4" style="color:#1b4332;">System Analytics & Reporting</h2>
+
+    <div class="stats-row">
+        <div class="card">
+            <h5>Total Users</h5>
+            <p class="fs-2 text-primary">{{ total_users }}</p>
+        </div>
+
+        <div class="card">
+            <h5>Active Users</h5>
+            <p class="fs-2 text-success">{{ active_users }}</p>
+        </div>
+
+        <div class="card">
+            <h5>Inactive Users</h5>
+            <p class="fs-2 text-danger">{{ inactive_users }}</p>
+        </div>
+    </div>
+
+    <h4 class="fw-bold mt-4 text-secondary">User Distribution by Role</h4>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Role</th>
+                <th>Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in users_by_role %}
+            <tr>
+                <td>{{ r.role|capfirst }}</td>
+                <td>{{ r.count }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="2">No data</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- PIE CHART -->
+    <h4 class="fw-bold mt-5 text-secondary">User Roles Pie Chart</h4>
+    <canvas id="rolePieChart" style="max-height: 350px;"></canvas>
+
+    <div class="summary mt-5">
+        <h4 class="summary-title">Payroll & Feedback Summary</h4>
+        <ul>
+            <li>Total Payrolls Processed: <b>{{ total_payrolls }}</b></li>
+            <li>Total Net Salary Paid: <b>₹{{ total_net_salary|floatformat:2 }}</b></li>
+            <li>Reviewed Feedbacks: <b>{{ reviewed_feedbacks }}</b></li>
+            <li>Pending Feedbacks: <b>{{ pending_feedbacks }}</b></li>
+        </ul>
+
+        <a href="{% url 'generate_admin_report_pdf' %}" class="btn btn-success mt-3">
+            Download PDF Report
+        </a>
+    </div>
+
+</div>
+
+<script>
+    const roleLabels = [
+        {% for r in users_by_role %}
+            "{{ r.role|capfirst }}",
+        {% endfor %}
+    ];
+
+    const roleCounts = [
+        {% for r in users_by_role %}
+            {{ r.count }},
+        {% endfor %}
+    ];
+
+    new Chart(document.getElementById('rolePieChart'), {
+        type: 'pie',
+        data: {
+            labels: roleLabels,
+            datasets: [{
+                data: roleCounts,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+</script>
+
+{% endblock %}
+
+

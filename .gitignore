@@ -1,0 +1,73 @@
+# Python compiled files
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Environment files
+.env
+.env.*.local
+
+# Django / databases / media
+*.sqlite3
+db.sqlite3
+/media
+/staticfiles
+
+# Byte-compiled / logs
+*.log
+pip-log.txt
+
+# IDEs / editors
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db# Python compiled files
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Environment files
+.env
+.env.*.local
+
+# Django / databases / media
+*.sqlite3
+db.sqlite3
+/media
+/staticfiles
+
+# Byte-compiled / logs
+*.log
+pip-log.txt
+
+# IDEs / editors
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor swap files
+*.swp
+EOF
+
+# Editor swap files
+*.swp
+EOF

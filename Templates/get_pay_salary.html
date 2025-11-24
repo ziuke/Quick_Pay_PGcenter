@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Admin | Allowances and Deductions | QuickPay {% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Add Allowances and Deductions</h2>
+
+<form method="POST" class="allowance-form">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+
+  <div class="container mt-3">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Dearness Allowance</label>
+        {{ form.da }}
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">House Rent Allowance</label>
+        {{ form.hra }}
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Provident Fund</label>
+        {{ form.pf }}
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Employees' State Insurance</label>
+        {{ form.esi }}
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Effective Date</label>
+        {{ form.effective_from }}
+      </div>
+    </div>
+
+    <div class="text-end mt-4">
+      <button type="submit" class="btn-feature">Submit</button>
+    </div>
+  </div>
+</form>
+{% endblock %}

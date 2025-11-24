@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Employee | Payment History | QuickPay{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="fw-bold mb-4">My Payment History</h2>
+
+  {% if payslips %}
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>Month</th>
+            <th>Generated On</th>
+            <th>Total Earnings (₹)</th>
+            <th>Total Deductions (₹)</th>
+            <th>Net Pay (₹)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for slip in payslips %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ slip.generated_date|date:"F Y" }}</td>
+            <td>{{ slip.generated_date|date:"d M, Y" }}</td>
+            <td>{{ slip.total_earnings }}</td>
+            <td>{{ slip.total_deductions }}</td>
+            <td><strong>{{ slip.net_pay }}</strong></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% else %}
+  <div class="text-center text-muted mt-4">
+    <p>No payment history available yet.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+

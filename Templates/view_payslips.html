@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Employee | View Payslips | QuickPay{% endblock %}
+{% block content %}
+
+<style>
+    .payslip-card {
+        border-radius: 14px;
+        transition: 0.3s;
+    }
+    .payslip-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0px 6px 20px rgba(0,0,0,0.08);
+    }
+    .table th {
+        background: #f8f9fa;
+        font-weight: 600;
+    }
+</style>
+
+<div class="container mt-5" style="max-width: 900px;">
+
+    <h3 class="text-center mb-4 fw-semibold">Your Recent Payslips</h3>
+
+    {% if pay %}
+    <div class="card payslip-card shadow-sm border-0">
+        <div class="card-body">
+
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Total Earnings</th>
+                        <th>Total Deductions</th>
+                        <th>Net Pay</th>
+                        <th>Generated Date</th>
+                        <th class="text-center">Download</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in pay %}
+                    <tr>
+                        <td class="fw-semibold text-success">₹ {{ i.total_earnings }}</td>
+                        <td class="fw-semibold text-danger">₹ {{ i.total_deductions }}</td>
+                        <td class="fw-semibold text-primary">₹ {{ i.net_pay }}</td>
+                        <td>{{ i.generated_date|date:"M d, Y" }}</td>
+                        <td class="text-center">
+                            <a class="btn btn-outline-primary btn-sm px-3"
+                               href="{% url 'generate_payslip_pdf' i.id %}">
+                               Download PDF
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    {% else %}
+        <p class="text-muted text-center mt-4">You do not have any payslips yet.</p>
+    {% endif %}
+
+</div>
+
+{% endblock %}
+

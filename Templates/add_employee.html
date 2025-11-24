@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}HR Manager| Add Employee| QuickPay {% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">Add New Employee</h2>
+  <form method="POST">
+    {% csrf_token %}
+
+    <label>User</label>
+    {{ form.user }}
+
+    <label>Department</label>
+    {{ form.department }}
+
+    <label>Salary</label>
+    {{ form.salary }}
+
+    <label>Status</label>
+    {{ form.status }}
+
+    <button type="submit" class="btn btn-primary">Add Employee</button>
+</form>
+
+{% endblock %}

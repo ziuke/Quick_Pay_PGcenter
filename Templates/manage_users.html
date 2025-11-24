@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Admin | Manage Users | QuickPay {% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Manage Users</h2>
+    <a href="{% url 'add_user' %}" class="btn btn-primary px-4 py-2 rounded-3">
+      + Add New User
+    </a>
+  </div>
+    <div class="table-responsive shadow-sm rounded bg-white p-4">
+        <table class="table table-hover align-middle text-center">
+            <thead class="table-secondary">
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in u %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ i.first_name }} {{ i.last_name }}</td>
+                    <td>{{ i.role|capfirst }}</td>
+                    <td>{{ i.email }}</td>
+                    <td>
+                        {% if i.is_active %}
+                            <span class="badge bg-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-danger">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="POST" action="{% url 'toggle_user_status' i.id %}" class="d-inline">
+                            {% csrf_token %}
+                            {% if i.is_active %}
+                                <button class="btn btn-warning btn-sm">Deactivate</button>
+                            {% else %}
+                                <button class="btn btn-success btn-sm">Activate</button>
+                            {% endif %}
+                        </form>
+                        <form method="POST" action="{% url 'delete_user' i.id %}" class="d-inline"
+                              onsubmit="return confirm('Are you sure you want to delete {{ i.first_name }}?');">
+                            {% csrf_token %}
+                            <button class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="text-center text-muted py-3">No users found.</td></tr>
+                {% endfor %}
+            </tbody>
+          </table>
+       </div>
+    </div>
+  {% endblock %}
